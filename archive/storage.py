@@ -31,7 +31,12 @@ def parse_line(line):
 
     Returns dict.
     """
-    raise NotImplementedError("parse_line")
+    line_arr = line.split(',')
+    if len(line_arr) != 5:
+        raise NotImplementedError("parse_line")
+    else:
+        line_dict = {"id" : line_arr[0], "title" : line_arr[1], "city" : line_arr[2], "year" : line_arr[3], "condition" : line_arr[4]}
+        return line_dict
 
 
 def load_archive(path):
