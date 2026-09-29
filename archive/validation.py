@@ -59,6 +59,9 @@ def validate_city(value):
 
     Returns (bool, str).
     """
+    if len(value) == 5 and value[:2] == "MS" and value[2:].isdigit():
+        return True, "Valid ID"
+    return False, "Invalid ID"
     raise NotImplementedError("validate_city")
 
 
