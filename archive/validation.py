@@ -36,7 +36,9 @@ def validate_id(value):
 
     Returns (bool, str).
     """
-    raise NotImplementedError("validate_id")
+    if len(str(value)) == 5 and value[:2] == "MS" and value[2:].isdigit():
+        return True, "Valid ID"
+    return False, "Invalid ID"
 
 
 def validate_title(value):
@@ -47,7 +49,9 @@ def validate_title(value):
 
     Returns (bool, str).
     """
-    raise NotImplementedError("validate_title")
+    if value and len(str(value).strip()) >= 3:
+        return True, "Valid title"
+    return False, "Invalid title"
 
 
 def validate_city(value):
@@ -59,10 +63,9 @@ def validate_city(value):
 
     Returns (bool, str).
     """
-    if len(value) == 5 and value[:2] == "MS" and value[2:].isdigit():
-        return True, "Valid ID"
-    return False, "Invalid ID"
-    raise NotImplementedError("validate_city")
+    if value and str(value).strip().title() in KNOWN_CITIES:
+        return True, "Valid city"
+    return False, "Invalid city"
 
 
 def validate_year(value):
@@ -77,7 +80,10 @@ def validate_year(value):
 
     Returns (bool, str).
     """
-    raise NotImplementedError("validate_year")
+    val_str = str(value).strip()
+    if val_str.isdigit() and MIN_YEAR <= int(val_str) <= MAX_YEAR:
+        return True, "Valid year"
+    return False, "Invalid year"
 
 
 def validate_condition(value):
@@ -88,7 +94,9 @@ def validate_condition(value):
 
     Returns (bool, str).
     """
-    raise NotImplementedError("validate_condition")
+    if value and str(value).strip().lower() in VALID_CONDITIONS:
+        return True, "Valid condition"
+    return False, "Invalid condition"
 
 
 def validate_record(record):
@@ -102,4 +110,19 @@ def validate_record(record):
 
     Do not re-write the rules here. Call the five functions above.
     """
-    raise NotImplementedError("validate_record")
+    errors = []
+    
+    fields = [
+        ("id", validate_id),
+        ("title", validate_title),
+        ("city", validate_city),
+        ("year", validate_year),
+        ("condition", validate_condition),
+    ]
+
+    for key, validator in fields:
+        is_valid, reason = validator(record.get(key, ""))
+        if not is_valid:
+            errors.append(reason)
+
+    return errors
