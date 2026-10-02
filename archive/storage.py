@@ -95,4 +95,5 @@ def save_archive(path, records):
                     val = '"' + val.replace('"', '""') + '"'
                 row.append(val)
             file.write(",".join(row) + "\n")
+    return None
         
