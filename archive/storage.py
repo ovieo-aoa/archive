@@ -86,4 +86,13 @@ def save_archive(path, records):
 
     Returns None.
     """
-    raise NotImplementedError("save_archive")
+    with open(path, "w", encoding="utf-8") as file:
+        for record in records:
+            row = []
+            for field in FIELD_NAMES:
+                val = str(record[field])
+                if "," in val or '"' in val or "\n" in val:
+                    val = '"' + val.replace('"', '""') + '"'
+                row.append(val)
+            file.write(",".join(row) + "\n")
+        
