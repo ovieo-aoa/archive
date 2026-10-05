@@ -15,6 +15,7 @@ any work.
 
 from archive.errors import MalformedRecordError
 from validation import validate_record
+import csv
 
 FIELD_NAMES = ["id", "title", "city", "year", "condition"]
 
@@ -86,14 +87,11 @@ def save_archive(path, records):
 
     Returns None.
     """
-    with open(path, "w", encoding="utf-8") as file:
-        for record in records:
-            row = []
-            for field in FIELD_NAMES:
-                val = str(record[field])
-                if "," in val or '"' in val or "\n" in val:
-                    val = '"' + val.replace('"', '""') + '"'
-                row.append(val)
-            file.write(",".join(row) + "\n")
+    headers = FIELD_NAMES
+    with open(path, mode ="w" , newline = "", encoding = "utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=headers)
+
+        writer.writeheader()
+        writer.writerows(records)
     return None
         
