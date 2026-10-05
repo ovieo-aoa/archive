@@ -24,8 +24,8 @@ KNOWN_CITIES = ["Timbuktu", "Djenne", "Gao", "Walata", "Chinguetti"]
 
 VALID_CONDITIONS = ["fragile", "fair", "good"]
 
-MIN_YEAR = 1100
-MAX_YEAR = 1900
+MIN_YEAR = 0
+MAX_YEAR = 2026
 
 
 def validate_id(value):
