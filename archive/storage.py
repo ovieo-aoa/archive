@@ -14,6 +14,8 @@ any work.
 """
 
 from archive.errors import MalformedRecordError
+from validation import validate_record
+import csv
 
 FIELD_NAMES = ["id", "title", "city", "year", "condition"]
 
@@ -31,11 +33,13 @@ def parse_line(line):
 
     Returns dict.
     """
-    line_arr = line.split(',')
+    line_arr = line.strip().split(',')
     if len(line_arr) != 5:
-        raise NotImplementedError("parse_line")
+        raise MalformedRecordError("No bro")
     else:
-        line_dict = {"id" : line_arr[0], "title" : line_arr[1], "city" : line_arr[2], "year" : line_arr[3], "condition" : line_arr[4]}
+        for x in range (len(line_arr)):
+            line_arr[x] = line_arr[x].strip()
+        line_dict = dict(zip(FIELD_NAMES, line_arr))
         return line_dict
 
 
@@ -55,8 +59,26 @@ def load_archive(path):
 
     Returns (list, list).
     """
-    raise NotImplementedError("load_archive")
-
+    valid_records = []
+    rejected_lines = []
+    try:
+        file = open(path, "r")
+        for line in file:
+            if not line.strip():
+                continue
+            try:
+                record = parse_line(line)
+                if len(validate_record(record)) == 0:
+                    valid_records.append(record)
+                else:
+                    rejected_lines.append(line)
+            except Exception:
+                rejected_lines.append(line)
+        file.close()
+        return (valid_records,rejected_lines)
+    except FileNotFoundError :
+        return ([],[])
+        
 
 def save_archive(path, records):
     """Write every record to `path` as CSV, one per line, no header.
@@ -65,4 +87,11 @@ def save_archive(path, records):
 
     Returns None.
     """
-    raise NotImplementedError("save_archive")
+    headers = FIELD_NAMES
+    with open(path, mode ="w" , newline = "", encoding = "utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=headers)
+
+        writer.writeheader()
+        writer.writerows(records)
+    return None
+        

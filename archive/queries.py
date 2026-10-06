@@ -22,6 +22,7 @@ def count_before(records, year):
     return sum(1 for record in records if int(record["year"]) < year)
 
 
+
 def find_by_city(records, city):
     """Every record whose city matches `city`, case-insensitively.
 

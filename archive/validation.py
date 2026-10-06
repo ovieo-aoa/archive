@@ -24,8 +24,8 @@ KNOWN_CITIES = ["Timbuktu", "Djenne", "Gao", "Walata", "Chinguetti"]
 
 VALID_CONDITIONS = ["fragile", "fair", "good"]
 
-MIN_YEAR = 1100
-MAX_YEAR = 1900
+MIN_YEAR = 0
+MAX_YEAR = 2026
 
 
 def validate_id(value):
@@ -37,8 +37,8 @@ def validate_id(value):
     Returns (bool, str).
     """
     if len(str(value)) == 5 and value[:2] == "MS" and value[2:].isdigit():
-        return True, "Valid ID"
-    return False, "Invalid ID"
+        return (True, "")
+    return (False, "Invalid ID")
 
 
 def validate_title(value):
@@ -50,8 +50,8 @@ def validate_title(value):
     Returns (bool, str).
     """
     if value and len(str(value).strip()) >= 3:
-        return True, "Valid title"
-    return False, "Invalid title"
+        return (True, "")
+    return (False, "Invalid title")
 
 
 def validate_city(value):
@@ -64,8 +64,8 @@ def validate_city(value):
     Returns (bool, str).
     """
     if value and str(value).strip().title() in KNOWN_CITIES:
-        return True, "Valid city"
-    return False, "Invalid city"
+        return (True, "")
+    return (False, "Invalid city")
 
 
 def validate_year(value):
@@ -82,7 +82,7 @@ def validate_year(value):
     """
     val_str = str(value).strip()
     if val_str.isdigit() and MIN_YEAR <= int(val_str) <= MAX_YEAR:
-        return True, "Valid year"
+        return True, ""
     return False, "Invalid year"
 
 
@@ -95,7 +95,7 @@ def validate_condition(value):
     Returns (bool, str).
     """
     if value and str(value).strip().lower() in VALID_CONDITIONS:
-        return True, "Valid condition"
+        return True, ""
     return False, "Invalid condition"
 
 
