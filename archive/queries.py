@@ -19,7 +19,7 @@ def count_before(records, year):
 
     Returns int.
     """
-    raise NotImplementedError("count_before")
+    print("Hi")
 
 
 def find_by_city(records, city):
