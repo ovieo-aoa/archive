@@ -19,11 +19,13 @@ def count_before(records, year):
 
     Returns int.
     """
+    feature/queries
     count = 0
     for record in records:
         if int(record["year"]) < year:
             count += 1
     return count
+
 
 
 def find_by_city(records, city):

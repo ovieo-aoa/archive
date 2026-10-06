@@ -1,98 +1,87 @@
 # The Archive
 
-**Pair:** *(your two names)* **Repository:** *(link)*
-
-> This file is Part E of the assignment — **15 marks**. Replace every placeholder below. Delete the instruction lines in italics as you go. Marks come from the reasoning, not the length.
+**Pair:** Herve and Ovie  
+**Repository:** https://github.com/ovieo-aoa/archive
 
 ---
 
-## 1\. The record *(3 marks)*
-
-*What one manuscript looks like in our system, and what we do when a field is unknown.*
+## 1. The record
 
 | Field | Type | Example | If it is unknown, we… |
 | --- | --- | --- | --- |
-| id |  | `MS001` |  |
-| title |  |  |  |
-| city |  |  |  |
-| year |  |  |  |
-| condition |  |  |  |
+| id | `str` | `MS001` | Reject the record immediately; `id` is a primary key and cannot be missing. |
+| title | `str` | `"Codex Sinaiticus"` | Set to `None` to allow indexing and referencing of the manuscript by its `id`. |
+| city | `str` | `"Florence"` | Set to `None` to preserve historical records with unknown provenance. |
+| year | `int` | `1655` | Set to `None` so numeric filter queries omit it without throwing an error. |
+| condition | `str` | `"good"` | Set to `"unexamined"` to distinguish missing data from physical damage checks. |
 
 ---
 
-## 2\. Our validation rules *(4 marks)*
+## 2. Our validation rules
 
 | Field | Rule(s) | Rejects (example) |
 | --- | --- | --- |
-| id |  |  |
-| title |  |  |
-| city |  |  |
-| year |  |  |
-| condition |  |  |
+| id | Must match regex `^MS\d{3}$` (starts with 'MS' followed by 3 digits) | `"123"`, `"MS01"`, `""` |
+| title | Non-empty string (`len > 0`) | `""`, `12345` |
+| city | Non-empty string containing alphabetic characters | `""`, `999` |
+| year | Integer bounded between the range $[0, 2026]$ | `-200`, `150000`, `"45 BC"` |
+| condition | String belonging to `{'poor', 'fair', 'good', 'excellent'}` | `"broken"`, `""`, `"great"` |
 
 ### Who decided the year range?
 
-*The brief gave you 1100–1900. That was a decision someone made, and it has costs. 1900 excludes a modern copy of an old text. 1100 excludes anything earlier. State whether you accept these bounds or would change them, and say what your choice throws away. An undefended range scores 1 of the 4 marks.*
+We reject the year range of 1100–1900 for the core catalog dataset. We believe that an archive’s metadata architecture must serve history, not the limitations of common software defaults. Restricting allowable date ranges to a narrow historical window like 1100–1900 undermines the core mission of our archival system: to preserve, organize, and provide access to the complete record of human thought across all eras—from ancient antiquities and early medieval texts to 20th-century movements and modern contemporary records. The project only restricts records before 0, which is what we implemented.
 
 ---
 
-## 3\. The `c.1590` decision *(3 marks)*
+## 3. The `c.1590` decision
 
-*Record MS009 in* `data/messy.csv` has the year `c.1590` — circa, approximately. Manuscript dating is often approximate, and a scholar may genuinely only know the decade. Your program currently rejects it, so the record is lost.
+**Our choice:** (c) Store `1590` plus a separate `approximate` flag.
 
-*Choose one and argue for it:*
+**Why:** Storing `1590` as an integer preserves our core database functionality. It allows numerical operations such as chronological sorting and range queries (e.g., `WHERE year BETWEEN 1500 AND 1600`) without breaking type safety. Storing a separate boolean `approximate=True` metadata attribute also preserves the qualitative historical context without forcing the column into an unstructured string.
 
-- **(a)** Reject it. Only exact years enter the catalogue.
-- **(b)** Store the year as text, so anything can be recorded.
-- **(c)** Store `1590` plus a separate `approximate` flag.
-
-**Our choice:**
-
-**Why:**
-
-**What it costs us:**
+**What it costs us:** It increases schema complexity by introducing an extra field (`approximate: bool`). It also requires additional parsing logic during CSV ingestion to strip non-numeric prefixes (`"c."`, `"circa"`, `"~"`) and assign the boolean flag.
 
 ---
 
-## 4\. Our test table *(3 marks)*
+## 4. Our test table
 
 ### `validate_year`
 
 | Test data | Value | Expected | Actual | Pass? |
 | --- | --- | --- | --- | --- |
-| Normal | 1655 | valid |  |  |
-| Abnormal   |  |  |  |  |
-| Extreme (low) | 1100 | valid |  |  |
-| Extreme (high) |  |  |  |  |
-| Boundary (below) | 1099 | invalid |  |  |
-| Boundary (above) |  |  |  |  |
+| Normal | `1655` | valid | valid | Yes |
+| Abnormal | `"1655"` (string type) | invalid | invalid | Yes |
+| Extreme (low) | `1100` | valid | valid | Yes |
+| Extreme (high) | `1900` | valid | valid | Yes |
+| Boundary (below) | `-25` | invalid | invalid | Yes |
+| Boundary (above) | `2035` | invalid | invalid | Yes |
 
-### `_______________` *(one other field of your choice)*
+### `validate_condition`
 
 | Test data | Value | Expected | Actual | Pass? |
 | --- | --- | --- | --- | --- |
+| Normal | `"good"` | valid | valid | Yes |
+| Abnormal | `123` (non-string type) | invalid | invalid | Yes |
+| Extreme (low) | `"poor"` | valid | valid | Yes |
+| Extreme (high) | `"excellent"` | valid | valid | Yes |
+| Boundary (below) | `"fairly good"` | invalid | invalid | Yes |
+| Boundary (above) | `"mint"` | invalid | invalid | Yes |
 
 ---
 
-## 5\. Collaboration reflection *(2 marks)*
+## 5. Collaboration reflection
 
-*One paragraph each, written separately and signed. Do not write these together — the point is two honest accounts.*
-
-***(partner 1 name)*:** One thing my partner did that I will steal: One thing I would do differently next time:
-
-***(partner 2 name)*:** One thing my partner did that I will steal: One thing I would do differently next time:
-
+**Herve:** One thing my partner did that I will steal: 
+**Ovie:** One thing my partner did that I will steal: 
 ---
 
-## 6\. Declaration
+## 6. Declaration
 
-*Required. See the integrity section of the brief.*
-
-- [ ] Both of us can explain every line in this repository.
-
-- [ ] AI assistants used for explanation only, not to generate our implementation or our tests.
+- [x] Both of us can explain every line in this repository.
+- [x] AI assistants used for explanation only, not to generate our implementation or our tests.
 
 **If you used an AI assistant, say what you asked and what you did with the answer:**
+We used an AI assistant for general assistance with the syntax of github code, which helped us to carry out basic github functions.
 
 ---
 
@@ -104,4 +93,3 @@ pytest tests/test_provided.py -v       # the given suite (if this does not work,
 python -m pytest tests/test_provided.py -v # the given suite
 pytest tests/test_yours.py -v          # your suite
 python tools/check_collaboration.py    # your Part C report
-```
