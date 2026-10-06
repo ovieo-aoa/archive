@@ -65,6 +65,6 @@ def cities_summary(records):
     """
     summary = {}
     for record in records:
-        city_name = record["city"]
+        city_name = record['city']
         summary[city_name] = summary.get(city_name, 0) + 1
     return summary
