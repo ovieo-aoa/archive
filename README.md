@@ -24,18 +24,12 @@
 | id | Must match regex `^MS\d{3}$` (starts with 'MS' followed by 3 digits) | `"123"`, `"MS01"`, `""` |
 | title | Non-empty string (`len > 0`) | `""`, `12345` |
 | city | Non-empty string containing alphabetic characters | `""`, `999` |
-| year | Integer bounded in the inclusive range $[1100, 1900]$ | `1099`, `1901`, `"1655"` |
+| year | Integer bounded between the range $[0, 2026]$ | `-200`, `150000`, `"45 BC"` |
 | condition | String belonging to `{'poor', 'fair', 'good', 'excellent'}` | `"broken"`, `""`, `"great"` |
 
 ### Who decided the year range?
 
-We accept the year range of 1100–1900 for the core catalog dataset. Restricting records to this window protects data integrity by eliminating common data-entry typos (such as `19000` or `150`).
-
-However, enforcing these boundaries incurs trade-off costs:
-1. **1100 lower bound:** Throws away ancient, classical, and early-medieval manuscripts created before the 12th century (e.g., Carolingian texts or classical papyri).
-2. **1900 upper bound:** Throws away modern 20th-century scholarly transcriptions, critical editions, and modern facsimiles of ancient texts.
-
-We defend accepting these bounds because our dataset targets late-medieval to early-modern archival collections. Opening the range to arbitrary numbers would weaken automated error detection without adding value to our primary historical scope.
+We reject the year range of 1100–1900 for the core catalog dataset. We believe that an archive’s metadata architecture must serve history, not the limitations of common software defaults. Restricting allowable date ranges to a narrow historical window like 1100–1900 undermines the core mission of our archival system: to preserve, organize, and provide access to the complete record of human thought across all eras—from ancient antiquities and early medieval texts to 20th-century movements and modern contemporary records. The project only restricts records before 0, which is what we implemented.
 
 ---
 
@@ -43,7 +37,7 @@ We defend accepting these bounds because our dataset targets late-medieval to ea
 
 **Our choice:** (c) Store `1590` plus a separate `approximate` flag.
 
-**Why:** Storing `1590` as an integer preserves core database functionality, allowing numerical operations such as chronological sorting and range queries (e.g., `WHERE year BETWEEN 1500 AND 1600`) without breaking type safety. Storing a separate boolean `approximate=True` metadata attribute preserves the qualitative historical context without forcing the column into an unstructured string.
+**Why:** Storing `1590` as an integer preserves our core database functionality. It allows numerical operations such as chronological sorting and range queries (e.g., `WHERE year BETWEEN 1500 AND 1600`) without breaking type safety. Storing a separate boolean `approximate=True` metadata attribute also preserves the qualitative historical context without forcing the column into an unstructured string.
 
 **What it costs us:** It increases schema complexity by introducing an extra field (`approximate: bool`). It also requires additional parsing logic during CSV ingestion to strip non-numeric prefixes (`"c."`, `"circa"`, `"~"`) and assign the boolean flag.
 
@@ -59,8 +53,8 @@ We defend accepting these bounds because our dataset targets late-medieval to ea
 | Abnormal | `"1655"` (string type) | invalid | invalid | Yes |
 | Extreme (low) | `1100` | valid | valid | Yes |
 | Extreme (high) | `1900` | valid | valid | Yes |
-| Boundary (below) | `1099` | invalid | invalid | Yes |
-| Boundary (above) | `1901` | invalid | invalid | Yes |
+| Boundary (below) | `-25` | invalid | invalid | Yes |
+| Boundary (above) | `2035` | invalid | invalid | Yes |
 
 ### `validate_condition`
 
@@ -87,7 +81,7 @@ We defend accepting these bounds because our dataset targets late-medieval to ea
 - [x] AI assistants used for explanation only, not to generate our implementation or our tests.
 
 **If you used an AI assistant, say what you asked and what you did with the answer:**
-We asked an AI assistant to explain the architectural trade-offs between storing dates as unstructured strings versus splitting them into integer years with a boolean flag. We used the explanation to evaluate query performance and wrote our own implementation, validation rules, and unit tests.
+We used an AI assistant for general assistance with the syntax of github code, which helped us to carry out basic github functions.
 
 ---
 
