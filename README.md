@@ -71,8 +71,8 @@ We reject the year range of 1100–1900 for the core catalog dataset. We believe
 
 ## 5. Collaboration reflection
 
-**Herve:** One thing my partner did that I will steal: 
-**Ovie:** One thing my partner did that I will steal: 
+**Herve:** One thing my partner did that I will steal: Ovie's approach to data parsing in the storage logic was wonderful, especially how he cleanly stripped string prefixes like "c." and "circa" during ingestion while simultaneously mapping the estimated boolean flag. I’ll definitely steal that technique for handling messy input data gracefully without corrupting the core data types.
+**Ovie:** One thing my partner did that I will steal: Herve's strict and defensive approach to validation is something I want to take note of especially how he used exact patterns and explicit boundary checks to catch invalid types and out-of-range values before they ever reach the storage layer. I’ll steal that habit of writing tight, self-contained validation logic for future works.
 ---
 
 ## 6. Declaration
